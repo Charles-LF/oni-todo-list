@@ -1,0 +1,27 @@
+{
+  "name": "koishi-plugin-oni-todo-list",
+  "description": "",
+  "version": "0.0.1",
+  "contributors": [
+    "Charles <charles@klei.vip>"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin"
+  ],
+  "devDependencies": {
+    "@koishijs/client": "^5.30.4"
+  },
+  "peerDependencies": {
+    "@koishijs/plugin-console": "^5.30.4",
+    "koishi": "^4.18.7"
+  }
+}
