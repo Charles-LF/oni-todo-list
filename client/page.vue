@@ -3,10 +3,10 @@
     <k-card>
       <div class="todo-container">
         <!-- 新任务输入框 -->
-        <div class="input-wrapper">
+        <!-- <div class="input-wrapper">
           <input v-model="newTodoText" @keyup.enter="addTodo" placeholder="托德到底什么时候才女装啊..." class="todo-input">
           <button @click="addTodo" class="add-btn">添加新任务</button>
-        </div>
+        </div> -->
         <!-- 筛选完成的项目 -->
         <div class="filter-buttons">
           <button @click="filter = 'all'" :class="{ active: filter === 'all' }" class="filter-btn">全部</button>
@@ -22,7 +22,7 @@
               <input type="checkbox" v-model="todo.completed" class="checkbox">
               <span :class="{ completed: todo.completed }">{{ todo.id + '.' + todo.title }}</span>
             </div>
-            <button @click="deleteTodo(todo.id)" class="delete-btn">×</button>
+            <!-- <button @click="deleteTodo(todo.id)" class="delete-btn">×</button> -->
           </li>
         </ul>
 
@@ -30,7 +30,7 @@
         <div class="todo-footer">
           <span>{{ remainingCount }} 个任务未完成</span>
           <button @click="clearCompleted" class="clear-btn">
-            清除已完成
+            刷新列表
           </button>
         </div>
 
@@ -72,9 +72,7 @@ const remainingCount = computed(() => {
 
 // 清除已完成
 const clearCompleted = () => {
-  todos.value = todos.value.filter(todo => !todo.completed)
   fetchTodos();
-  window.alert('已清除所有已完成任务...骗你的，没做嘞，去机器人命令清除罢')
 }
 
 // 过滤待办事项
@@ -88,19 +86,19 @@ const filteredTodos = computed(() => {
 })
 
 // 添加新任务
-function addTodo() {
-  if (!newTodoText.value) return
-  // 调用后端接口添加新任务
-  send('add-todo-item').then(() => {
-    // todo
-    fetchTodos()
-  })
-  window.alert('新任务添加成功...骗你的，没做嘞，去机器人命令添加罢')
-}
-function deleteTodo(id) {
-  fetchTodos();
-  window.alert(`${id}`+'任务删除成功...骗你的，没做嘞，去机器人命令删除罢')
-}
+// function addTodo() {
+//   if (!newTodoText.value) return
+//   // 调用后端接口添加新任务
+//   send('add-todo-item').then(() => {
+//     // todo
+//     fetchTodos()
+//   })
+//   window.alert('新任务添加成功...骗你的，没做嘞，去机器人命令添加罢')
+// }
+// function deleteTodo(id) {
+//   fetchTodos();
+//   window.alert(`${id}`+'任务删除成功...骗你的，没做嘞，去机器人命令删除罢')
+// }
 </script>
 
 <style scoped>
@@ -184,7 +182,6 @@ function deleteTodo(id) {
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0.5rem; /* 调整内边距 */
-  background-color: rgb(18, 17, 17); /* 添加背景色 */
   margin-bottom: 0.25rem; /* 任务项间距 */
   border-radius: 0.25rem; /* 任务项圆角 */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 轻微阴影 */
