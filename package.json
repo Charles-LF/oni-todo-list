@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-oni-todo-list",
-  "description": "",
-  "version": "0.0.2",
+  "description": "服务缺氧中文玩家的一个小插件",
+  "version": "0.0.3",
   "contributors": [
     "Charles <charles@klei.vip>"
   ],

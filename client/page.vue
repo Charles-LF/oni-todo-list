@@ -2,11 +2,6 @@
   <k-layout>
     <k-card>
       <div class="todo-container">
-        <!-- 新任务输入框 -->
-        <!-- <div class="input-wrapper">
-          <input v-model="newTodoText" @keyup.enter="addTodo" placeholder="托德到底什么时候才女装啊..." class="todo-input">
-          <button @click="addTodo" class="add-btn">添加新任务</button>
-        </div> -->
         <!-- 筛选完成的项目 -->
         <div class="filter-buttons">
           <button @click="filter = 'all'" :class="{ active: filter === 'all' }" class="filter-btn">全部</button>
@@ -19,10 +14,8 @@
         <ul class="todo-list">
           <li v-for="todo in filteredTodos" :key="todo.id" class="todo-item">
             <div class="todo-content">
-              <input type="checkbox" v-model="todo.completed" class="checkbox">
               <span :class="{ completed: todo.completed }">{{ todo.id + '.' + todo.title }}</span>
             </div>
-            <!-- <button @click="deleteTodo(todo.id)" class="delete-btn">×</button> -->
           </li>
         </ul>
 
@@ -54,8 +47,8 @@ interface Itodoitem {
 
 const todos = ref([]);
 send('get-todo-list').then((data: Itodoitem[]) => {
-    todos.value = data;
-  });
+  todos.value = data;
+});
 // 获取待办事项列表
 function fetchTodos() {
   send('get-todo-list').then((data: Itodoitem[]) => {
@@ -85,20 +78,6 @@ const filteredTodos = computed(() => {
   return todos.value
 })
 
-// 添加新任务
-// function addTodo() {
-//   if (!newTodoText.value) return
-//   // 调用后端接口添加新任务
-//   send('add-todo-item').then(() => {
-//     // todo
-//     fetchTodos()
-//   })
-//   window.alert('新任务添加成功...骗你的，没做嘞，去机器人命令添加罢')
-// }
-// function deleteTodo(id) {
-//   fetchTodos();
-//   window.alert(`${id}`+'任务删除成功...骗你的，没做嘞，去机器人命令删除罢')
-// }
 </script>
 
 <style scoped>
@@ -108,38 +87,6 @@ const filteredTodos = computed(() => {
   padding: 1.5rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* 输入区域样式 */
-.input-wrapper {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.todo-input {
-  flex: 1;
-  padding: 0.75rem;
-  border: 1px solid var(--medium-gray);
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: brown;
-}
-
-.add-btn {
-  padding: 0.75rem 1.25rem;
-  background-color: brown;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.add-btn:hover {
-  background-color: #45a049;
 }
 
 /* 筛选按钮样式 */
@@ -170,22 +117,32 @@ const filteredTodos = computed(() => {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: calc(6 * (0.75rem * 2 + 1.25rem + 1px)); /* 6行任务的高度 */
-  overflow-y: auto; /* 添加垂直滚动条 */
-  border: 1px solid var(--medium-gray); /* 添加边框 */
-  border-radius: 0.375rem; /* 圆角 */
-  padding: 0.5rem; /* 内边距 */
+  max-height: calc(6 * (0.75rem * 2 + 1.25rem + 1px));
+  /* 6行任务的高度 */
+  overflow-y: auto;
+  /* 添加垂直滚动条 */
+  border: 1px solid var(--medium-gray);
+  /* 添加边框 */
+  border-radius: 0.375rem;
+  /* 圆角 */
+  padding: 0.5rem;
+  /* 内边距 */
 }
 
 .todo-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 0.5rem; /* 调整内边距 */
-  margin-bottom: 0.25rem; /* 任务项间距 */
-  border-radius: 0.25rem; /* 任务项圆角 */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 轻微阴影 */
-  transition: all 0.2s ease; /* 过渡效果 */
+  padding: 0.75rem 0.5rem;
+  /* 调整内边距 */
+  margin-bottom: 0.25rem;
+  /* 任务项间距 */
+  border-radius: 0.25rem;
+  /* 任务项圆角 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* 轻微阴影 */
+  transition: all 0.2s ease;
+  /* 过渡效果 */
 }
 
 .todo-item:last-child {
@@ -199,25 +156,9 @@ const filteredTodos = computed(() => {
   flex: 1;
 }
 
-.checkbox {
-  width: 1.25rem;
-  height: 1.25rem;
-  cursor: pointer;
-}
-
 .completed {
   text-decoration: line-through;
   color: #868E96;
-}
-
-.delete-btn {
-  background: none;
-  border: none;
-  color: var(--accent-color);
-  font-size: 1.25rem;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
 .todo-item:hover .delete-btn {
@@ -247,22 +188,29 @@ const filteredTodos = computed(() => {
 .clear-btn:hover {
   color: #0056B3;
 }
+
 /* 自定义滚动条样式 */
 .todo-list::-webkit-scrollbar {
-  width: 6px; /* 滚动条宽度 */
+  width: 6px;
+  /* 滚动条宽度 */
 }
 
 .todo-list::-webkit-scrollbar-track {
-  background: var(--light-gray); /* 滚动条轨道背景 */
-  border-radius: 3px; /* 轨道圆角 */
+  background: var(--light-gray);
+  /* 滚动条轨道背景 */
+  border-radius: 3px;
+  /* 轨道圆角 */
 }
 
 .todo-list::-webkit-scrollbar-thumb {
-  background: #c0c0c0; /* 滚动条颜色 */
-  border-radius: 3px; /* 滚动条圆角 */
+  background: #c0c0c0;
+  /* 滚动条颜色 */
+  border-radius: 3px;
+  /* 滚动条圆角 */
 }
 
 .todo-list::-webkit-scrollbar-thumb:hover {
-  background: #a0a0a0; /* 滚动条悬停颜色 */
+  background: #a0a0a0;
+  /* 滚动条悬停颜色 */
 }
 </style>

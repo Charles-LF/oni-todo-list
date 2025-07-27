@@ -24,9 +24,15 @@ export interface Itodoitem {
   completed: boolean
 }
 
+interface IThings {
+  id: number
+  things: string
+}
+
 declare module 'koishi' {
   interface Tables {
     todoitem: Itodoitem
+    things: IThings
   }
 }
 
@@ -46,29 +52,30 @@ export function apply(ctx: Context) {
   }, {
     primary: 'id',
   })
+
+  ctx.model.extend('things', {
+    id: 'integer',
+    things: 'string'
+  })
+
   ctx.inject(['console'], (ctx) => {
     ctx.console.addEntry({
       dev: resolve(__dirname, '../client/index.ts'),
       prod: resolve(__dirname, '../dist'),
     })
   })
+
   // 前后端通信  没搞明白
   ctx.console.addListener('get-todo-list', async () => {
-    return await ctx.database.get('todoitem', {}) || []
-  })
-  ctx.console.addListener('add-todo-item', async (title: string) => {
-    const id = (await ctx.database.get('todoitem', {})).length + 1
-    const newItem: Itodoitem = { id, title, completed: false }
-    await ctx.database.create('todoitem', newItem)
     return await ctx.database.get('todoitem', {}) || []
   })
 
   // 指令注册
   ctx.command('todo', '待办事项清单', { authority: 0 }).action(async ({ session }) => {
     const todos = await ctx.database.get('todoitem', {})
-    const incompleteTodos = todos.filter(todo => !todo.completed)
+    const incompleteTodos = todos.filter(todo => todo)
     return `
-      当前任务清单如下：\n${incompleteTodos.map(todo => `${todo.id}. ${todo.title} [${todo.completed ? '完成' : '未完成'}]`).join('\n')}
+      前往网页端：https://klei.vip/onitodolist \n当前任务清单如下：\n${incompleteTodos.map(todo => `${todo.id}. ${todo.title} [${todo.completed ? '已完成' : '未完成'}]`).join('\n')}
     `
   })
 
@@ -101,8 +108,13 @@ export function apply(ctx: Context) {
     await ctx.database.remove('todoitem', { id: id })
     return `已删除待办事项 ID ${id}。`
   })
-  ctx.command('todo.clear', '清空待办事项列表', { authority: 0 }).action(async ({ session, options }) => {
-    return '先不做这个功能'
+  ctx.command('todo.clear', '清空已完成的待办事项列表', { authority: 2 }).action(async ({ session }) => {
+    const todos = await ctx.database.get('todoitem', {})
+    const incompleteTodos = todos.filter(todo => todo.completed)
+    incompleteTodos.map(async (todo) => {
+      await ctx.database.remove('todoitem', { id: todo.id })
+    })
+    return `已尝试移除以下已完成的待办：\n${incompleteTodos.map(todo => `${todo.id}. ${todo.title} [${todo.completed ? '已完成' : '未完成'}]`).join('\n')}`
   })
 
 }
