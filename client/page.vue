@@ -18,7 +18,6 @@
             </div>
           </li>
         </ul>
-
         <!-- 底部信息 -->
         <div class="todo-footer">
           <span>{{ remainingCount }} 个任务未完成</span>
@@ -30,7 +29,7 @@
       </div>
     </k-card>
     <k-card>
-      勉强能看，功能基本 没实现，去机器人端增删改查罢
+      <things/>
     </k-card>
 
   </k-layout>
@@ -39,6 +38,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { send } from '@koishijs/client';
+import things from './things.vue';
 interface Itodoitem {
   id: number
   title: string
@@ -117,8 +117,8 @@ const filteredTodos = computed(() => {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: calc(6 * (0.75rem * 2 + 1.25rem + 1px));
-  /* 6行任务的高度 */
+  max-height: calc(3 * (0.75rem * 2 + 1.25rem + 1px));
+  /* 5行任务的高度 */
   overflow-y: auto;
   /* 添加垂直滚动条 */
   border: 1px solid var(--medium-gray);
@@ -154,6 +154,7 @@ const filteredTodos = computed(() => {
   align-items: center;
   gap: 0.75rem;
   flex: 1;
+  max-width: 80%;
 }
 
 .completed {

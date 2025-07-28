@@ -10,6 +10,7 @@ export const usage = `
   todo.complete : 标记待办事项为完成,\n
   todo.delete : 删除待办事项,\n
   todo.clear : 清空待办事项列表,
+  
 `
 
 export interface Config { }
@@ -39,7 +40,7 @@ declare module 'koishi' {
 declare module '@koishijs/plugin-console' {
   interface Events {
     'get-todo-list'(): Promise<Itodoitem[]>,
-    'add-todo-item'(title: string): Promise<Itodoitem[]>,
+    'get-things'(): Promise<IThings[]>,
   }
 }
 
@@ -55,7 +56,7 @@ export function apply(ctx: Context) {
 
   ctx.model.extend('things', {
     id: 'integer',
-    things: 'string'
+    things: 'text'
   })
 
   ctx.inject(['console'], (ctx) => {
@@ -69,6 +70,9 @@ export function apply(ctx: Context) {
   ctx.console.addListener('get-todo-list', async () => {
     return await ctx.database.get('todoitem', {}) || []
   })
+  ctx.console.addListener('get-things',async()=>{
+    return await ctx.database.get('things',{}) || []
+  })
 
   // 指令注册
   ctx.command('todo', '待办事项清单', { authority: 0 }).action(async ({ session }) => {
@@ -78,7 +82,6 @@ export function apply(ctx: Context) {
       前往网页端：https://klei.vip/onitodolist \n当前任务清单如下：\n${incompleteTodos.map(todo => `${todo.id}. ${todo.title} [${todo.completed ? '已完成' : '未完成'}]`).join('\n')}
     `
   })
-
   ctx.command('todo.add <title>', '添加待办事项', { authority: 0 }).action(async ({ session }, title: string) => {
     if (!title) {
       return '请提供待办事项的内容。'
@@ -89,7 +92,6 @@ export function apply(ctx: Context) {
     await ctx.database.create('todoitem', newItem)
     return `已添加待办事项：ID ${id}，内容：${title}`
   })
-
   ctx.command('todo.complete <ids:number>', '标记待办事项为完成', { authority: 0 }).action(async ({ session }, id: number) => {
     const todos = await ctx.database.get('todoitem', { id: id })
     console.log(todos)
@@ -99,7 +101,6 @@ export function apply(ctx: Context) {
     await ctx.database.set('todoitem', { id: id }, { completed: true })
     return `已标记待办事项 ID ${id} 为完成。`
   })
-
   ctx.command('todo.delete <id:number>', '删除待办事项', { authority: 0 }).action(async ({ session }, id: number) => {
     const todos = await ctx.database.get('todoitem', { id: id })
     if (!todos || todos.length === 0) {
@@ -116,5 +117,31 @@ export function apply(ctx: Context) {
     })
     return `已尝试移除以下已完成的待办：\n${incompleteTodos.map(todo => `${todo.id}. ${todo.title} [${todo.completed ? '已完成' : '未完成'}]`).join('\n')}`
   })
-
+  ctx.command('things','列出记住的列表，记你太美',{authority:0}).action(async()=>{
+    const things = await ctx.database.get('things',{}) ||[]
+    if (!things){
+      return `还没有记好的事情喔！`
+    }
+    return `
+    前往网页端：https://klei.vip/onitodolist \n当前记住的东西如下：\n${things.map(thing => `${thing.id}. ${thing.things}`).join('\n')}
+    `
+  })
+   ctx.command('things.add <thingStr>', '记你太美', { authority: 0 }).alias('你记一下').action(async ({ session }, thingStr: string) => {
+    if (!thingStr) {
+      return '请提供待办事项的内容。'
+    }
+    const things = await ctx.database.get('things', {})
+    const id = things.length + 1 | 0
+    const newItem:IThings = { id, things:thingStr}
+    await ctx.database.create('things', newItem)
+    return `已添加待办事项：ID ${id}，内容：${thingStr}`
+  })
+    ctx.command('things.delete <id:number>', '忘记记住的东西', { authority: 0 }).action(async ({ session }, id: number) => {
+    const things = await ctx.database.get('things', { id: id })
+    if (!things || things.length === 0) {
+      return `未找到 ID 为 ${id} 的东西。`
+    }
+    await ctx.database.remove('things', { id: id })
+    return `已经忘记了 ID为 ${id}的事情啦。`
+  })
 }
