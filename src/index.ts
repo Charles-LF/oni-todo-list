@@ -70,8 +70,8 @@ export function apply(ctx: Context) {
   ctx.console.addListener('get-todo-list', async () => {
     return await ctx.database.get('todoitem', {}) || []
   })
-  ctx.console.addListener('get-things',async()=>{
-    return await ctx.database.get('things',{}) || []
+  ctx.console.addListener('get-things', async () => {
+    return await ctx.database.get('things', {}) || []
   })
 
   // 指令注册
@@ -117,26 +117,26 @@ export function apply(ctx: Context) {
     })
     return `已尝试移除以下已完成的待办：\n${incompleteTodos.map(todo => `${todo.id}. ${todo.title} [${todo.completed ? '已完成' : '未完成'}]`).join('\n')}`
   })
-  ctx.command('things','列出记住的列表，记你太美',{authority:0}).action(async()=>{
-    const things = await ctx.database.get('things',{}) ||[]
-    if (!things){
+  ctx.command('things', '列出记住的列表，记你太美', { authority: 0 }).action(async () => {
+    const things = await ctx.database.get('things', {}) || []
+    if (!things) {
       return `还没有记好的事情喔！`
     }
     return `
     前往网页端：https://klei.vip/onitodolist \n当前记住的东西如下：\n${things.map(thing => `${thing.id}. ${thing.things}`).join('\n')}
     `
   })
-   ctx.command('things.add <thingStr>', '记你太美', { authority: 0 }).alias('你记一下').action(async ({ session }, thingStr: string) => {
+  ctx.command('things.add <thingStr:text>', '记你太美', { authority: 0 }).alias('你记一下').action(async ({ session }, thingStr: string) => {
     if (!thingStr) {
       return '请提供待办事项的内容。'
     }
     const things = await ctx.database.get('things', {})
-    const id = things.length + 1 | 0
-    const newItem:IThings = { id, things:thingStr}
+    const id = things.length + 1 || 0
+    const newItem: IThings = { id: id, things: thingStr }
     await ctx.database.create('things', newItem)
     return `已添加待办事项：ID ${id}，内容：${thingStr}`
   })
-    ctx.command('things.delete <id:number>', '忘记记住的东西', { authority: 0 }).action(async ({ session }, id: number) => {
+  ctx.command('things.delete <id:number>', '忘记记住的东西', { authority: 0 }).action(async ({ session }, id: number) => {
     const things = await ctx.database.get('things', { id: id })
     if (!things || things.length === 0) {
       return `未找到 ID 为 ${id} 的东西。`
