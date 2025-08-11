@@ -86,11 +86,9 @@ export function apply(ctx: Context) {
     if (!title) {
       return '请提供待办事项的内容。'
     }
-    const todos = await ctx.database.get('todoitem', {})
-    const id = todos.length + 1 | 0
-    const newItem: Itodoitem = { id, title, completed: false }
+    const newItem: Itodoitem = { id: Date.now(), title, completed: false }
     await ctx.database.create('todoitem', newItem)
-    return `已添加待办事项：ID ${id}，内容：${title}`
+    return `已添加待办事项：ID ${newItem.id}，内容：${title}`
   })
   ctx.command('todo.complete <ids:number>', '标记待办事项为完成', { authority: 0 }).action(async ({ session }, id: number) => {
     const todos = await ctx.database.get('todoitem', { id: id })
@@ -130,11 +128,9 @@ export function apply(ctx: Context) {
     if (!thingStr) {
       return '请提供待办事项的内容。'
     }
-    const things = await ctx.database.get('things', {})
-    const id = things.length + 1 || 0
-    const newItem: IThings = { id: id, things: thingStr }
+    const newItem: IThings = { id: Date.now(), things: thingStr }
     await ctx.database.create('things', newItem)
-    return `已添加待办事项：ID ${id}，内容：${thingStr}`
+    return `已添加待办事项：ID ${newItem.id}，内容：${thingStr}`
   })
   ctx.command('things.delete <id:number>', '忘记记住的东西', { authority: 0 }).action(async ({ session }, id: number) => {
     const things = await ctx.database.get('things', { id: id })
